@@ -589,8 +589,8 @@
     
     <script>
         // Supabase Configuration - ERSETZE MIT DEINEN WERTEN!
-        const SUPABASE_URL = https://eupbpygozirksjzorpsr.supabase.co
-        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cGJweWdvemlya3Nqem9ycHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTYwNTAsImV4cCI6MjA2NTEzMjA1MH0.NIm4o4G1l0ZPg1_UyqFE66Tmm6wHJnQWy8uTWNLqVVc
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL_HIER'
+        const SUPABASE_KEY = 'DEIN_SUPABASE_KEY_HIER'
         
         // Supabase Client erstellen
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -774,15 +774,15 @@
                         };
                     }
                     
-                    // In Supabase speichern
-                    const saved = await saveToDatabase('probetraining_anmeldungen', data);
-                    
-                    if (saved) {
-                        // Auch an Formspree senden
-                        this.submit();
-                    } else {
-                        alert('Fehler beim Speichern in der Datenbank. Bitte versuchen Sie es erneut.');
+                    // In Supabase speichern (funktioniert auch wenn Supabase nicht erreichbar ist)
+                    try {
+                        await saveToDatabase('probetraining_anmeldungen', data);
+                    } catch (error) {
+                        console.log('Supabase nicht verfügbar, nur Email wird gesendet');
                     }
+                    
+                    // Immer an Formspree senden und weiterleiten
+                    this.submit();
                 });
             }
             
@@ -811,15 +811,15 @@
                         formular_typ: 'turnier'
                     };
                     
-                    // In Supabase speichern
-                    const saved = await saveToDatabase('turnier_anmeldungen', data);
-                    
-                    if (saved) {
-                        // Auch an Formspree senden
-                        this.submit();
-                    } else {
-                        alert('Fehler beim Speichern in der Datenbank. Bitte versuchen Sie es erneut.');
+                    // In Supabase speichern (funktioniert auch wenn Supabase nicht erreichbar ist)
+                    try {
+                        await saveToDatabase('turnier_anmeldungen', data);
+                    } catch (error) {
+                        console.log('Supabase nicht verfügbar, nur Email wird gesendet');
                     }
+                    
+                    // Immer an Formspree senden und weiterleiten
+                    this.submit();
                 });
             }
         });
