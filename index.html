@@ -1,294 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
- <!-- Supabase SDK -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    
-    <script>
-        // Supabase Configuration
-        const SUPABASE_URL = "https://eupbpygozirksjzorpsr.supabase.co" ;
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cGJweWdvemlya3Nqem9ycHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTYwNTAsImV4cCI6MjA2NTEzMjA1MH0.NIm4o4G1l0ZPg1_UyqFE66Tmm6wHJnQWy8uTWNLqVVc";
-        
-        // Supabase Client erstellen
-        let supabase = null;
-        try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log('Supabase erfolgreich initialisiert');
-        } catch (error) {
-            console.log('Supabase Initialisierung fehlgeschlagen:', error);
-        }
-        
-        // Daten in Supabase speichern
-        async function saveToDatabase(tableName, data) {
-            if (!supabase) {
-                console.log('Supabase nicht verfügbar');
-                return true;
-            }
-            
-            try {
-                const { data: result, error } = await supabase
-                    .from(tableName)
-                    .insert([data]);
-                
-                if (error) {
-                    console.error('Supabase Fehler:', error);
-                    return true; // Trotzdem fortfahren
-                }
-                
-                console.log('Erfolgreich in Supabase gespeichert:', result);
-                return true;
-            } catch (err) {
-                console.error('Supabase Verbindungsfehler:', err);
-                return true; // Trotzdem fortfahren
-            }
-        }
-
-        // Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            body.setAttribute('data-theme', newTheme);
-            
-            const themeToggle = document.querySelector('.theme-toggle');
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // Save theme preference
-            localStorage.setItem('theme', newTheme);
-        }
-
-        // Load saved theme
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-            const themeToggle = document.querySelector('.theme-toggle');
-            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-        }
-
-        // Mobile Menu
-        function toggleMobileMenu() {
-            const navMenu = document.querySelector('.nav-menu');
-            navMenu.classList.toggle('active');
-        }
-
-        // Section Navigation
-        function showSection(sectionId) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                section.classList.add('hidden');
-            });
-            
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-                
-                // Add animation
-                const animatedElements = targetSection.querySelectorAll('.fade-in');
-                animatedElements.forEach((el, index) => {
-                    el.style.animationDelay = `${index * 0.2}s`;
-                });
-            }
-            
-            // Close mobile menu
-            document.querySelector('.nav-menu').classList.remove('active');
-        }
-
-        // Training Form Toggle
-        function toggleTrainingForm() {
-            const kategorie = document.getElementById('kategorie').value;
-            const kinderForm = document.getElementById('kinderForm');
-            const erwachseneForm = document.getElementById('erwachseneForm');
-            
-            // Reset required attributes
-            const kinderInputs = kinderForm.querySelectorAll('input, select, textarea');
-            const erwachseneInputs = erwachseneForm.querySelectorAll('input, select, textarea');
-            
-            kinderInputs.forEach(input => input.removeAttribute('required'));
-            erwachseneInputs.forEach(input => input.removeAttribute('required'));
-            
-            if (kategorie === 'kinder') {
-                kinderForm.classList.remove('hidden');
-                erwachseneForm.classList.add('hidden');
-                // Set required attributes for active form
-                document.getElementById('kindName').setAttribute('required', '');
-                document.getElementById('kindGeburtstag').setAttribute('required', '');
-                document.getElementById('erziehungsberechtigter').setAttribute('required', '');
-                document.getElementById('elternEmail').setAttribute('required', '');
-                document.getElementById('elternTelefon').setAttribute('required', '');
-            } else if (kategorie === 'erwachsene') {
-                erwachseneForm.classList.remove('hidden');
-                kinderForm.classList.add('hidden');
-                // Set required attributes for active form
-                document.getElementById('erwachseneName').setAttribute('required', '');
-                document.getElementById('erwachseneEmail').setAttribute('required', '');
-                document.getElementById('erwachseneTelefon').setAttribute('required', '');
-                document.getElementById('erwachseneGeburtstag').setAttribute('required', '');
-            } else {
-                kinderForm.classList.add('hidden');
-                erwachseneForm.classList.add('hidden');
-            }
-        }
-
-        // Tournament Mode Selection
-        function limitSelection() {
-            const checkboxes = document.querySelectorAll('input[name="modus"]:checked');
-            const allCheckboxes = document.querySelectorAll('input[name="modus"]');
-            const doppelpartnerGroup = document.getElementById('doppelpartnerGroup');
-            
-            if (checkboxes.length >= 2) {
-                allCheckboxes.forEach(cb => {
-                    if (!cb.checked) {
-                        cb.disabled = true;
-                    }
-                });
-            } else {
-                allCheckboxes.forEach(cb => {
-                    cb.disabled = false;
-                });
-            }
-            
-            // Show partner field if double mode selected
-            const hasDoppel = Array.from(checkboxes).some(cb => 
-                cb.value === 'HD' || cb.value === 'MD' || cb.value === 'DD'
-            );
-            
-            if (hasDoppel) {
-                doppelpartnerGroup.style.display = 'block';
-            } else {
-                doppelpartnerGroup.style.display = 'none';
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTheme();
-            showSection('home');
-            
-            // Form Handler Setup nach DOM geladen
-            setTimeout(() => {
-                setupFormHandlers();
-            }, 100);
-        });
-
-        // Form Handlers einrichten
-        function setupFormHandlers() {
-            // Probetraining Form
-            const probetrainingForm = document.querySelector('#probetraining form');
-            if (probetrainingForm) {
-                console.log('Probetraining Form Handler wird eingerichtet');
-                
-                probetrainingForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    console.log('Probetraining Form wird verarbeitet');
-                    
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Wird gesendet...';
-                    
-                    try {
-                        // Formulardaten sammeln
-                        const formData = new FormData(this);
-                        const kategorie = formData.get('kategorie');
-                        
-                        if (!kategorie) {
-                            alert('Bitte wählen Sie eine Kategorie aus!');
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = originalText;
-                            return;
-                        }
-                        
-                        let data = {
-                            kategorie: kategorie,
-                            anmeldung_datum: new Date().toISOString(),
-                            formular_typ: 'probetraining'
-                        };
-                        
-                        // Je nach Kategorie verschiedene Daten sammeln
-                        if (kategorie === 'kinder') {
-                            data = {
-                                ...data,
-                                kind_name: formData.get('kindName'),
-                                kind_geburtstag: formData.get('kindGeburtstag'),
-                                erziehungsberechtigter: formData.get('erziehungsberechtigter'),
-                                eltern_email: formData.get('elternEmail'),
-                                eltern_telefon: formData.get('elternTelefon'),
-                                krankheiten: formData.get('krankheiten')
-                            };
-                        } else if (kategorie === 'erwachsene') {
-                            data = {
-                                ...data,
-                                name: formData.get('erwachseneName'),
-                                email: formData.get('erwachseneEmail'),
-                                telefon: formData.get('erwachseneTelefon'),
-                                geburtstag: formData.get('erwachseneGeburtstag')
-                            };
-                        }
-                        
-                        // Versuche in Supabase zu speichern
-                        console.log('Speichere in Supabase:', data);
-                        await saveToDatabase('probetraining_anmeldungen', data);
-                        
-                    } catch (error) {
-                        console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
-                    }
-                    
-                    // Immer weiterleiten
-                    console.log('Leite zu Formspree weiter');
-                    this.submit();
-                });
-            }
-            
-            // Turnier Form
-            const turnierForm = document.querySelector('#turnier form');
-            if (turnierForm) {
-                console.log('Turnier Form Handler wird eingerichtet');
-                
-                turnierForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    console.log('Turnier Form wird verarbeitet');
-                    
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Wird gesendet...';
-                    
-                    try {
-                        const formData = new FormData(this);
-                        
-                        // Modi sammeln
-                        const selectedModi = [];
-                        const modiCheckboxes = this.querySelectorAll('input[name="modus"]:checked');
-                        modiCheckboxes.forEach(cb => selectedModi.push(cb.value));
-                        
-                        const data = {
-                            name: formData.get('turnierName'),
-                            geburtstag: formData.get('turnierGeburtstag'),
-                            email: formData.get('turnierEmail'),
-                            telefon: formData.get('turnierTelefon'),
-                            spielklasse: formData.get('spielklasse'),
-                            modi: selectedModi.join(', '),
-                            doppelpartner: formData.get('doppelpartner'),
-                            anmeldung_datum: new Date().toISOString(),
-                            formular_typ: 'turnier'
-                        };
-                        
-                        // Versuche in Supabase zu speichern
-                        console.log('Speichere in Supabase:', data);
-                        await saveToDatabase('turnier_anmeldungen', data);
-                        
-                    } catch (error) {
-                        console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
-                    }
-                    
-                    // Immer weiterleiten
-                    console.log('Leite zu Formspree weiter');
-                    this.submit();
-                });
-            }
-        }
-    </script>
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badminton Verein - Willkommen</title>
@@ -854,6 +566,293 @@
         </div>
     </footer>
 
-   
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://eupbpygozirksjzorpsr.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cGJweWdvemlya3Nqem9ycHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTYwNTAsImV4cCI6MjA2NTEzMjA1MH0.NIm4o4G1l0ZPg1_UyqFE66Tmm6wHJnQWy8uTWNLqVVc';
+        
+        // Supabase Client erstellen
+        let supabase = null;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('Supabase erfolgreich initialisiert');
+        } catch (error) {
+            console.log('Supabase Initialisierung fehlgeschlagen:', error);
+        }
+        
+        // Daten in Supabase speichern
+        async function saveToDatabase(tableName, data) {
+            if (!supabase) {
+                console.log('Supabase nicht verfügbar');
+                return true;
+            }
+            
+            try {
+                const { data: result, error } = await supabase
+                    .from(tableName)
+                    .insert([data]);
+                
+                if (error) {
+                    console.error('Supabase Fehler:', error);
+                    return true; // Trotzdem fortfahren
+                }
+                
+                console.log('Erfolgreich in Supabase gespeichert:', result);
+                return true;
+            } catch (err) {
+                console.error('Supabase Verbindungsfehler:', err);
+                return true; // Trotzdem fortfahren
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // Save theme preference
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Section Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                
+                // Add animation
+                const animatedElements = targetSection.querySelectorAll('.fade-in');
+                animatedElements.forEach((el, index) => {
+                    el.style.animationDelay = `${index * 0.2}s`;
+                });
+            }
+            
+            // Close mobile menu
+            document.querySelector('.nav-menu').classList.remove('active');
+        }
+
+        // Training Form Toggle
+        function toggleTrainingForm() {
+            const kategorie = document.getElementById('kategorie').value;
+            const kinderForm = document.getElementById('kinderForm');
+            const erwachseneForm = document.getElementById('erwachseneForm');
+            
+            // Reset required attributes
+            const kinderInputs = kinderForm.querySelectorAll('input, select, textarea');
+            const erwachseneInputs = erwachseneForm.querySelectorAll('input, select, textarea');
+            
+            kinderInputs.forEach(input => input.removeAttribute('required'));
+            erwachseneInputs.forEach(input => input.removeAttribute('required'));
+            
+            if (kategorie === 'kinder') {
+                kinderForm.classList.remove('hidden');
+                erwachseneForm.classList.add('hidden');
+                // Set required attributes for active form
+                document.getElementById('kindName').setAttribute('required', '');
+                document.getElementById('kindGeburtstag').setAttribute('required', '');
+                document.getElementById('erziehungsberechtigter').setAttribute('required', '');
+                document.getElementById('elternEmail').setAttribute('required', '');
+                document.getElementById('elternTelefon').setAttribute('required', '');
+            } else if (kategorie === 'erwachsene') {
+                erwachseneForm.classList.remove('hidden');
+                kinderForm.classList.add('hidden');
+                // Set required attributes for active form
+                document.getElementById('erwachseneName').setAttribute('required', '');
+                document.getElementById('erwachseneEmail').setAttribute('required', '');
+                document.getElementById('erwachseneTelefon').setAttribute('required', '');
+                document.getElementById('erwachseneGeburtstag').setAttribute('required', '');
+            } else {
+                kinderForm.classList.add('hidden');
+                erwachseneForm.classList.add('hidden');
+            }
+        }
+
+        // Tournament Mode Selection
+        function limitSelection() {
+            const checkboxes = document.querySelectorAll('input[name="modus"]:checked');
+            const allCheckboxes = document.querySelectorAll('input[name="modus"]');
+            const doppelpartnerGroup = document.getElementById('doppelpartnerGroup');
+            
+            if (checkboxes.length >= 2) {
+                allCheckboxes.forEach(cb => {
+                    if (!cb.checked) {
+                        cb.disabled = true;
+                    }
+                });
+            } else {
+                allCheckboxes.forEach(cb => {
+                    cb.disabled = false;
+                });
+            }
+            
+            // Show partner field if double mode selected
+            const hasDoppel = Array.from(checkboxes).some(cb => 
+                cb.value === 'HD' || cb.value === 'MD' || cb.value === 'DD'
+            );
+            
+            if (hasDoppel) {
+                doppelpartnerGroup.style.display = 'block';
+            } else {
+                doppelpartnerGroup.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            showSection('home');
+            
+            // Form Handler Setup nach DOM geladen
+            setTimeout(() => {
+                setupFormHandlers();
+            }, 100);
+        });
+
+        // Form Handlers einrichten
+        function setupFormHandlers() {
+            // Probetraining Form
+            const probetrainingForm = document.querySelector('#probetraining form');
+            if (probetrainingForm) {
+                console.log('Probetraining Form Handler wird eingerichtet');
+                
+                probetrainingForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('Probetraining Form wird verarbeitet');
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Wird gesendet...';
+                    
+                    try {
+                        // Formulardaten sammeln
+                        const formData = new FormData(this);
+                        const kategorie = formData.get('kategorie');
+                        
+                        if (!kategorie) {
+                            alert('Bitte wählen Sie eine Kategorie aus!');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                            return;
+                        }
+                        
+                        let data = {
+                            kategorie: kategorie,
+                            anmeldung_datum: new Date().toISOString(),
+                            formular_typ: 'probetraining'
+                        };
+                        
+                        // Je nach Kategorie verschiedene Daten sammeln
+                        if (kategorie === 'kinder') {
+                            data = {
+                                ...data,
+                                kind_name: formData.get('kindName'),
+                                kind_geburtstag: formData.get('kindGeburtstag'),
+                                erziehungsberechtigter: formData.get('erziehungsberechtigter'),
+                                eltern_email: formData.get('elternEmail'),
+                                eltern_telefon: formData.get('elternTelefon'),
+                                krankheiten: formData.get('krankheiten')
+                            };
+                        } else if (kategorie === 'erwachsene') {
+                            data = {
+                                ...data,
+                                name: formData.get('erwachseneName'),
+                                email: formData.get('erwachseneEmail'),
+                                telefon: formData.get('erwachseneTelefon'),
+                                geburtstag: formData.get('erwachseneGeburtstag')
+                            };
+                        }
+                        
+                        // Versuche in Supabase zu speichern
+                        console.log('Speichere in Supabase:', data);
+                        await saveToDatabase('probetraining_anmeldungen', data);
+                        
+                    } catch (error) {
+                        console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
+                    }
+                    
+                    // Immer weiterleiten
+                    console.log('Leite zu Formspree weiter');
+                    this.submit();
+                });
+            }
+            
+            // Turnier Form
+            const turnierForm = document.querySelector('#turnier form');
+            if (turnierForm) {
+                console.log('Turnier Form Handler wird eingerichtet');
+                
+                turnierForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('Turnier Form wird verarbeitet');
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Wird gesendet...';
+                    
+                    try {
+                        const formData = new FormData(this);
+                        
+                        // Modi sammeln
+                        const selectedModi = [];
+                        const modiCheckboxes = this.querySelectorAll('input[name="modus"]:checked');
+                        modiCheckboxes.forEach(cb => selectedModi.push(cb.value));
+                        
+                        const data = {
+                            name: formData.get('turnierName'),
+                            geburtstag: formData.get('turnierGeburtstag'),
+                            email: formData.get('turnierEmail'),
+                            telefon: formData.get('turnierTelefon'),
+                            spielklasse: formData.get('spielklasse'),
+                            modi: selectedModi.join(', '),
+                            doppelpartner: formData.get('doppelpartner'),
+                            anmeldung_datum: new Date().toISOString(),
+                            formular_typ: 'turnier'
+                        };
+                        
+                        // Versuche in Supabase zu speichern
+                        console.log('Speichere in Supabase:', data);
+                        await saveToDatabase('turnier_anmeldungen', data);
+                        
+                    } catch (error) {
+                        console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
+                    }
+                    
+                    // Immer weiterleiten
+                    console.log('Leite zu Formspree weiter');
+                    this.submit();
+                });
+            }
+        }
+    </script>
 </body>
 </html>
