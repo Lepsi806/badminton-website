@@ -1,1 +1,714 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Verein - Willkommen</title>
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --light-blue: #3b82f6;
+            --dark-blue: #1d4ed8;
+            --white: #ffffff;
+            --light-gray: #f8fafc;
+            --gray: #64748b;
+            --dark-gray: #334155;
+            --black: #0f172a;
+        }
 
+        [data-theme="dark"] {
+            --white: #0f172a;
+            --light-gray: #1e293b;
+            --gray: #94a3b8;
+            --dark-gray: #cbd5e1;
+            --black: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--black);
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Sections */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section:nth-child(even) {
+            background: var(--light-gray);
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-blue);
+        }
+
+        .training-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .training-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .training-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .training-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .training-info {
+            margin-bottom: 1rem;
+        }
+
+        .training-info strong {
+            color: var(--dark-gray);
+        }
+
+        /* Forms */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit {
+            background: var(--primary-blue);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--dark-blue);
+        }
+
+        /* Hidden sections */
+        .hidden {
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--primary-blue);
+                flex-direction: column;
+                padding: 1rem 0;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .training-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                margin: 0 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">🏸 Badminton Verein</div>
+            <ul class="nav-menu">
+                <li><a href="#home" onclick="showSection('home')">Start</a></li>
+                <li><a href="#training" onclick="showSection('training')">Training</a></li>
+                <li><a href="#probetraining" onclick="showSection('probetraining')">Probetraining</a></li>
+                <li><a href="#turnier" onclick="showSection('turnier')">Turnier</a></li>
+            </ul>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            <button class="mobile-menu" onclick="toggleMobileMenu()">☰</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <div class="hero">
+                <div class="container">
+                    <h1 class="fade-in">Willkommen beim Badminton Verein</h1>
+                    <p class="fade-in">Erlebe die Faszination des Badmintons - für Kinder, Jugendliche und Erwachsene</p>
+                    <div class="cta-buttons fade-in">
+                        <a href="#probetraining" onclick="showSection('probetraining')" class="btn btn-primary">Probetraining anmelden</a>
+                        <a href="#turnier" onclick="showSection('turnier')" class="btn btn-secondary">Turnier anmelden</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Training Section -->
+        <section id="training" class="section hidden">
+            <div class="container">
+                <h2>Trainingszeiten</h2>
+                <div class="training-grid">
+                    <div class="training-card fade-in">
+                        <h3>Erwachsenentraining</h3>
+                        <div class="training-info">
+                            <strong>Montag, Mittwoch, Freitag:</strong><br>
+                            19:30 - 22:00 Uhr<br>
+                            📍 Bötzel Stadion, Reislingen
+                        </div>
+                        <div class="training-info">
+                            <strong>Donnerstag:</strong><br>
+                            19:30 - 22:00 Uhr<br>
+                            📍 Phoenix Gymnasium, Vorsfelde
+                        </div>
+                        <div class="training-info">
+                            <strong>Probetraining:</strong> Mittwochs<br>
+                            <em>3x kostenlos möglich</em>
+                        </div>
+                    </div>
+                    
+                    <div class="training-card fade-in">
+                        <h3>Jugendtraining</h3>
+                        <div class="training-info">
+                            <strong>Freitag:</strong><br>
+                            18:00 - 19:30 Uhr
+                        </div>
+                        <div class="training-info">
+                            <em>Zusätzliche Trainingszeiten werden in Erwägung gezogen</em>
+                        </div>
+                        <div class="training-info">
+                            <strong>5 erfahrene Trainer</strong> betreuen unsere Nachwuchsspieler
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Probetraining Section -->
+        <section id="probetraining" class="section hidden">
+            <div class="container">
+                <h2>Probetraining Anmeldung</h2>
+                <div class="form-container fade-in">
+                    <form name="probetraining" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                        <input type="hidden" name="form-name" value="probetraining">
+                        <div style="display: none;">
+                            <label>Don't fill this out if you're human: <input name="bot-field"></label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Kategorie wählen:</label>
+                            <select name="kategorie" id="kategorie" onchange="toggleTrainingForm()" required>
+                                <option value="">Bitte wählen...</option>
+                                <option value="kinder">Kinder/Jugendliche</option>
+                                <option value="erwachsene">Erwachsene</option>
+                            </select>
+                        </div>
+
+                        <!-- Kinder/Jugend Form -->
+                        <div id="kinderForm" class="hidden">
+                            <div class="form-group">
+                                <label for="kindName">Name des Kindes *</label>
+                                <input type="text" name="kindName" id="kindName">
+                            </div>
+                            <div class="form-group">
+                                <label for="kindGeburtstag">Geburtsdatum *</label>
+                                <input type="date" name="kindGeburtstag" id="kindGeburtstag">
+                            </div>
+                            <div class="form-group">
+                                <label for="erziehungsberechtigter">Name des Erziehungsberechtigten *</label>
+                                <input type="text" name="erziehungsberechtigter" id="erziehungsberechtigter">
+                            </div>
+                            <div class="form-group">
+                                <label for="elternEmail">Email der Erziehungsberechtigten *</label>
+                                <input type="email" name="elternEmail" id="elternEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="elternTelefon">Telefonnummer der Erziehungsberechtigten *</label>
+                                <input type="tel" name="elternTelefon" id="elternTelefon">
+                            </div>
+                            <div class="form-group">
+                                <label for="krankheiten">Wichtige Krankheiten/Besonderheiten</label>
+                                <textarea name="krankheiten" id="krankheiten" rows="3" placeholder="Falls vorhanden, bitte hier angeben..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Erwachsene Form -->
+                        <div id="erwachseneForm" class="hidden">
+                            <div class="form-group">
+                                <label for="erwachseneName">Name *</label>
+                                <input type="text" name="erwachseneName" id="erwachseneName">
+                            </div>
+                            <div class="form-group">
+                                <label for="erwachseneEmail">Email *</label>
+                                <input type="email" name="erwachseneEmail" id="erwachseneEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="erwachseneTelefon">Telefonnummer *</label>
+                                <input type="tel" name="erwachseneTelefon" id="erwachseneTelefon">
+                            </div>
+                            <div class="form-group">
+                                <label for="erwachseneGeburtstag">Geburtsdatum *</label>
+                                <input type="date" name="erwachseneGeburtstag" id="erwachseneGeburtstag">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-submit">Anmeldung absenden</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Turnier Section -->
+        <section id="turnier" class="section hidden">
+            <div class="container">
+                <h2>Turnieranmeldung</h2>
+                <div class="form-container fade-in">
+                    <form name="turnier" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                        <input type="hidden" name="form-name" value="turnier">
+                        <div style="display: none;">
+                            <label>Don't fill this out if you're human: <input name="bot-field"></label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="turnierName">Name *</label>
+                            <input type="text" name="turnierName" id="turnierName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="turnierGeburtstag">Geburtsdatum *</label>
+                            <input type="date" name="turnierGeburtstag" id="turnierGeburtstag" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="turnierEmail">Email *</label>
+                            <input type="email" name="turnierEmail" id="turnierEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="turnierTelefon">Telefonnummer *</label>
+                            <input type="tel" name="turnierTelefon" id="turnierTelefon" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Spielklasse:</label>
+                            <select name="spielklasse" id="spielklasse" required>
+                                <option value="">Bitte wählen...</option>
+                                <option value="A">Klasse A</option>
+                                <option value="B">Klasse B</option>
+                                <option value="C">Klasse C</option>
+                                <option value="D">Klasse D</option>
+                                <option value="E">Klasse E</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Modi (bis zu 2 auswählen):</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="HD" name="modus" value="HD" onchange="limitSelection()">
+                                    <label for="HD">Herren Doppel (HD)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="HE" name="modus" value="HE" onchange="limitSelection()">
+                                    <label for="HE">Herren Einzel (HE)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="MD" name="modus" value="MD" onchange="limitSelection()">
+                                    <label for="MD">Mixed Doppel (MD)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="DD" name="modus" value="DD" onchange="limitSelection()">
+                                    <label for="DD">Damen Doppel (DD)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="DE" name="modus" value="DE" onchange="limitSelection()">
+                                    <label for="DE">Damen Einzel (DE)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="doppelpartnerGroup" style="display: none;">
+                            <label for="doppelpartner">Doppelpartner (falls Doppelmodus gewählt)</label>
+                            <input type="text" name="doppelpartner" id="doppelpartner" placeholder="Name des Doppelpartners">
+                        </div>
+
+                        <button type="submit" class="btn btn-submit">Turnieranmeldung absenden</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Badminton Verein. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // Save theme preference
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Section Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                
+                // Add animation
+                const animatedElements = targetSection.querySelectorAll('.fade-in');
+                animatedElements.forEach((el, index) => {
+                    el.style.animationDelay = `${index * 0.2}s`;
+                });
+            }
+            
+            // Close mobile menu
+            document.querySelector('.nav-menu').classList.remove('active');
+        }
+
+        // Training Form Toggle
+        function toggleTrainingForm() {
+            const kategorie = document.getElementById('kategorie').value;
+            const kinderForm = document.getElementById('kinderForm');
+            const erwachseneForm = document.getElementById('erwachseneForm');
+            
+            // Reset required attributes
+            const kinderInputs = kinderForm.querySelectorAll('input, select, textarea');
+            const erwachseneInputs = erwachseneForm.querySelectorAll('input, select, textarea');
+            
+            kinderInputs.forEach(input => input.removeAttribute('required'));
+            erwachseneInputs.forEach(input => input.removeAttribute('required'));
+            
+            if (kategorie === 'kinder') {
+                kinderForm.classList.remove('hidden');
+                erwachseneForm.classList.add('hidden');
+                // Set required attributes for active form
+                document.getElementById('kindName').setAttribute('required', '');
+                document.getElementById('kindGeburtstag').setAttribute('required', '');
+                document.getElementById('erziehungsberechtigter').setAttribute('required', '');
+                document.getElementById('elternEmail').setAttribute('required', '');
+                document.getElementById('elternTelefon').setAttribute('required', '');
+            } else if (kategorie === 'erwachsene') {
+                erwachseneForm.classList.remove('hidden');
+                kinderForm.classList.add('hidden');
+                // Set required attributes for active form
+                document.getElementById('erwachseneName').setAttribute('required', '');
+                document.getElementById('erwachseneEmail').setAttribute('required', '');
+                document.getElementById('erwachseneTelefon').setAttribute('required', '');
+                document.getElementById('erwachseneGeburtstag').setAttribute('required', '');
+            } else {
+                kinderForm.classList.add('hidden');
+                erwachseneForm.classList.add('hidden');
+            }
+        }
+
+        // Tournament Mode Selection
+        function limitSelection() {
+            const checkboxes = document.querySelectorAll('input[name="modus"]:checked');
+            const allCheckboxes = document.querySelectorAll('input[name="modus"]');
+            const doppelpartnerGroup = document.getElementById('doppelpartnerGroup');
+            
+            if (checkboxes.length >= 2) {
+                allCheckboxes.forEach(cb => {
+                    if (!cb.checked) {
+                        cb.disabled = true;
+                    }
+                });
+            } else {
+                allCheckboxes.forEach(cb => {
+                    cb.disabled = false;
+                });
+            }
+            
+            // Show partner field if double mode selected
+            const hasDoppel = Array.from(checkboxes).some(cb => 
+                cb.value === 'HD' || cb.value === 'MD' || cb.value === 'DD'
+            );
+            
+            if (hasDoppel) {
+                doppelpartnerGroup.style.display = 'block';
+            } else {
+                doppelpartnerGroup.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            showSection('home');
+        });
+    </script>
+</body>
+</html>
