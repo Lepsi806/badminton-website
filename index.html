@@ -433,11 +433,10 @@
             <div class="container">
                 <h2>Probetraining Anmeldung</h2>
                 <div class="form-container fade-in">
-                    <form name="probetraining" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-                        <input type="hidden" name="form-name" value="probetraining">
-                        <div style="display: none;">
-                            <label>Don't fill this out if you're human: <input name="bot-field"></label>
-                        </div>
+                    <form action="https://formspree.io/f/xeokanly" method="POST">
+                        <input type="hidden" name="_subject" value="Neue Probetraining Anmeldung">
+                        <input type="hidden" name="_next" value="https://melodious-kataifi-7a4701.netlify.app/#probetraining">
+                        <input type="hidden" name="_captcha" value="false">
                         
                         <div class="form-group">
                             <label>Kategorie wählen:</label>
@@ -507,11 +506,10 @@
             <div class="container">
                 <h2>Turnieranmeldung</h2>
                 <div class="form-container fade-in">
-                    <form name="turnier" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-                        <input type="hidden" name="form-name" value="turnier">
-                        <div style="display: none;">
-                            <label>Don't fill this out if you're human: <input name="bot-field"></label>
-                        </div>
+                    <form action="https://formspree.io/f/xeokanly" method="POST">
+                        <input type="hidden" name="_subject" value="Neue Turnier Anmeldung">
+                        <input type="hidden" name="_next" value="https://melodious-kataifi-7a4701.netlify.app/#turnier">
+                        <input type="hidden" name="_captcha" value="false">
                         
                         <div class="form-group">
                             <label for="turnierName">Name *</label>
