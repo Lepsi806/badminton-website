@@ -338,24 +338,6 @@
         .fade-in {
             animation: fadeIn 0.6s ease-out;
         }
-
-        .success-message {
-            background: #10b981;
-            color: white;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .error-message {
-            background: #ef4444;
-            color: white;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -584,43 +566,7 @@
         </div>
     </footer>
 
-    <!-- Supabase SDK -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    
     <script>
-        // Supabase Configuration - ERSETZE MIT DEINEN WERTEN!
-        const SUPABASE_URL = https://eupbpygozirksjzorpsr.supabase.co
-        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cGJweWdvemlya3Nqem9ycHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTYwNTAsImV4cCI6MjA2NTEzMjA1MH0.NIm4o4G1l0ZPg1_UyqFE66Tmm6wHJnQWy8uTWNLqVVc
-        
-        // Supabase Client erstellen
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-        
-        // Daten in Supabase speichern (mit besserer Fehlerbehandlung)
-        async function saveToDatabase(tableName, data) {
-            try {
-                // Prüfe ob Supabase konfiguriert ist
-                if (SUPABASE_URL.includes('DEINE_SUPABASE_URL_HIER') || SUPABASE_KEY.includes('DEIN_SUPABASE_KEY_HIER')) {
-                    console.log('Supabase nicht konfiguriert - nur Email wird versendet');
-                    return true; // Fahre trotzdem fort
-                }
-                
-                const { data: result, error } = await supabase
-                    .from(tableName)
-                    .insert([data])
-                
-                if (error) {
-                    console.error('Supabase Fehler:', error)
-                    return true; // Trotzdem fortfahren für Email
-                }
-                
-                console.log('Erfolgreich in Supabase gespeichert:', result)
-                return true
-            } catch (err) {
-                console.error('Supabase Verbindungsfehler:', err)
-                return true; // Trotzdem fortfahren für Email
-            }
-        }
-
         // Theme Toggle
         function toggleTheme() {
             const body = document.body;
@@ -738,145 +684,10 @@
             }
         }
 
-        // Form Submissions mit Doppel-Speicherung (Formspree + Supabase)
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
             showSection('home');
-            
-            // Warte kurz bis alle Elemente geladen sind
-            setTimeout(() => {
-                // Probetraining Form Handler
-                const probetrainingForms = document.querySelectorAll('form');
-                probetrainingForms.forEach(form => {
-                    if (form.action && form.action.includes('formspree') && form.querySelector('#kategorie')) {
-                        console.log('Probetraining Form gefunden');
-                        form.addEventListener('submit', async function(e) {
-                            e.preventDefault();
-                            console.log('Probetraining Form wird verarbeitet');
-                            
-                            // Button deaktivieren um Doppel-Klicks zu vermeiden
-                            const submitBtn = this.querySelector('button[type="submit"]');
-                            if (submitBtn) {
-                                const originalText = submitBtn.textContent;
-                                submitBtn.disabled = true;
-                                submitBtn.textContent = 'Wird gesendet...';
-                            }
-                            
-                            try {
-                                // Formulardaten sammeln
-                                const formData = new FormData(this);
-                                const kategorie = formData.get('kategorie');
-                                
-                                if (!kategorie) {
-                                    alert('Bitte wählen Sie eine Kategorie aus!');
-                                    if (submitBtn) {
-                                        submitBtn.disabled = false;
-                                        submitBtn.textContent = originalText;
-                                    }
-                                    return;
-                                }
-                                
-                                let data = {
-                                    kategorie: kategorie,
-                                    anmeldung_datum: new Date().toISOString(),
-                                    formular_typ: 'probetraining'
-                                };
-                                
-                                // Je nach Kategorie verschiedene Daten sammeln
-                                if (kategorie === 'kinder') {
-                                    data = {
-                                        ...data,
-                                        kind_name: formData.get('kindName'),
-                                        kind_geburtstag: formData.get('kindGeburtstag'),
-                                        erziehungsberechtigter: formData.get('erziehungsberechtigter'),
-                                        eltern_email: formData.get('elternEmail'),
-                                        eltern_telefon: formData.get('elternTelefon'),
-                                        krankheiten: formData.get('krankheiten')
-                                    };
-                                } else if (kategorie === 'erwachsene') {
-                                    data = {
-                                        ...data,
-                                        name: formData.get('erwachseneName'),
-                                        email: formData.get('erwachseneEmail'),
-                                        telefon: formData.get('erwachseneTelefon'),
-                                        geburtstag: formData.get('erwachseneGeburtstag')
-                                    };
-                                }
-                                
-                                console.log('Versuche Supabase Speicherung:', data);
-                                
-                                // Versuche in Supabase zu speichern (max 2 Sekunden warten)
-                                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(true), 2000));
-                                const savePromise = saveToDatabase('probetraining_anmeldungen', data);
-                                
-                                await Promise.race([savePromise, timeoutPromise]);
-                                
-                            } catch (error) {
-                                console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
-                            }
-                            
-                            console.log('Leite zu Formspree weiter');
-                            // Immer weiterleiten (egal ob Datenbank funktioniert oder nicht)
-                            this.submit();
-                        });
-                    }
-                });
-                
-                // Turnier Form Handler
-                probetrainingForms.forEach(form => {
-                    if (form.action && form.action.includes('formspree') && form.querySelector('#spielklasse')) {
-                        console.log('Turnier Form gefunden');
-                        form.addEventListener('submit', async function(e) {
-                            e.preventDefault();
-                            console.log('Turnier Form wird verarbeitet');
-                            
-                            // Button deaktivieren um Doppel-Klicks zu vermeiden
-                            const submitBtn = this.querySelector('button[type="submit"]');
-                            if (submitBtn) {
-                                const originalText = submitBtn.textContent;
-                                submitBtn.disabled = true;
-                                submitBtn.textContent = 'Wird gesendet...';
-                            }
-                            
-                            try {
-                                const formData = new FormData(this);
-                                
-                                // Modi sammeln
-                                const selectedModi = [];
-                                const modiCheckboxes = this.querySelectorAll('input[name="modus"]:checked');
-                                modiCheckboxes.forEach(cb => selectedModi.push(cb.value));
-                                
-                                const data = {
-                                    name: formData.get('turnierName'),
-                                    geburtstag: formData.get('turnierGeburtstag'),
-                                    email: formData.get('turnierEmail'),
-                                    telefon: formData.get('turnierTelefon'),
-                                    spielklasse: formData.get('spielklasse'),
-                                    modi: selectedModi.join(', '),
-                                    doppelpartner: formData.get('doppelpartner'),
-                                    anmeldung_datum: new Date().toISOString(),
-                                    formular_typ: 'turnier'
-                                };
-                                
-                                console.log('Versuche Supabase Speicherung:', data);
-                                
-                                // Versuche in Supabase zu speichern (max 2 Sekunden warten)
-                                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(true), 2000));
-                                const savePromise = saveToDatabase('turnier_anmeldungen', data);
-                                
-                                await Promise.race([savePromise, timeoutPromise]);
-                                
-                            } catch (error) {
-                                console.log('Fehler ignoriert, Email wird trotzdem gesendet:', error);
-                            }
-                            
-                            console.log('Leite zu Formspree weiter');
-                            // Immer weiterleiten (egal ob Datenbank funktioniert oder nicht)
-                            this.submit();
-                        });
-                    }
-                });
-            }, 500); // Warte 500ms bis alle Elemente geladen sind
         });
     </script>
 </body>
