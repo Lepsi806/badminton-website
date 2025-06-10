@@ -584,7 +584,37 @@
         </div>
     </footer>
 
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Supabase Configuration - ERSETZE MIT DEINEN WERTEN!
+        const SUPABASE_URL = https://eupbpygozirksjzorpsr.supabase.co
+        const SUPABASE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cGJweWdvemlya3Nqem9ycHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTYwNTAsImV4cCI6MjA2NTEzMjA1MH0.NIm4o4G1l0ZPg1_UyqFE66Tmm6wHJnQWy8uTWNLqVVc
+        
+        // Supabase Client erstellen
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+        
+        // Daten in Supabase speichern
+        async function saveToDatabase(tableName, data) {
+            try {
+                const { data: result, error } = await supabase
+                    .from(tableName)
+                    .insert([data])
+                
+                if (error) {
+                    console.error('Fehler beim Speichern:', error)
+                    return false
+                }
+                
+                console.log('Erfolgreich gespeichert:', result)
+                return true
+            } catch (err) {
+                console.error('Unerwarteter Fehler:', err)
+                return false
+            }
+        }
+
         // Theme Toggle
         function toggleTheme() {
             const body = document.body;
@@ -702,10 +732,96 @@
             }
         }
 
-        // Initialize
+        // Form Submissions mit Doppel-Speicherung (Formspree + Supabase)
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
             showSection('home');
+            
+            // Probetraining Form Handler
+            const probetrainingForm = document.querySelector('form[action*="formspree"]');
+            if (probetrainingForm && probetrainingForm.querySelector('#kategorie')) {
+                probetrainingForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Formulardaten sammeln
+                    const formData = new FormData(this);
+                    const kategorie = formData.get('kategorie');
+                    
+                    let data = {
+                        kategorie: kategorie,
+                        anmeldung_datum: new Date().toISOString(),
+                        formular_typ: 'probetraining'
+                    };
+                    
+                    // Je nach Kategorie verschiedene Daten sammeln
+                    if (kategorie === 'kinder') {
+                        data = {
+                            ...data,
+                            kind_name: formData.get('kindName'),
+                            kind_geburtstag: formData.get('kindGeburtstag'),
+                            erziehungsberechtigter: formData.get('erziehungsberechtigter'),
+                            eltern_email: formData.get('elternEmail'),
+                            eltern_telefon: formData.get('elternTelefon'),
+                            krankheiten: formData.get('krankheiten')
+                        };
+                    } else if (kategorie === 'erwachsene') {
+                        data = {
+                            ...data,
+                            name: formData.get('erwachseneName'),
+                            email: formData.get('erwachseneEmail'),
+                            telefon: formData.get('erwachseneTelefon'),
+                            geburtstag: formData.get('erwachseneGeburtstag')
+                        };
+                    }
+                    
+                    // In Supabase speichern
+                    const saved = await saveToDatabase('probetraining_anmeldungen', data);
+                    
+                    if (saved) {
+                        // Auch an Formspree senden
+                        this.submit();
+                    } else {
+                        alert('Fehler beim Speichern in der Datenbank. Bitte versuchen Sie es erneut.');
+                    }
+                });
+            }
+            
+            // Turnier Form Handler
+            const turnierForm = document.querySelector('form[action*="formspree"]');
+            if (turnierForm && turnierForm.querySelector('#spielklasse')) {
+                turnierForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    
+                    // Modi sammeln
+                    const selectedModi = [];
+                    const modiCheckboxes = this.querySelectorAll('input[name="modus"]:checked');
+                    modiCheckboxes.forEach(cb => selectedModi.push(cb.value));
+                    
+                    const data = {
+                        name: formData.get('turnierName'),
+                        geburtstag: formData.get('turnierGeburtstag'),
+                        email: formData.get('turnierEmail'),
+                        telefon: formData.get('turnierTelefon'),
+                        spielklasse: formData.get('spielklasse'),
+                        modi: selectedModi.join(', '),
+                        doppelpartner: formData.get('doppelpartner'),
+                        anmeldung_datum: new Date().toISOString(),
+                        formular_typ: 'turnier'
+                    };
+                    
+                    // In Supabase speichern
+                    const saved = await saveToDatabase('turnier_anmeldungen', data);
+                    
+                    if (saved) {
+                        // Auch an Formspree senden
+                        this.submit();
+                    } else {
+                        alert('Fehler beim Speichern in der Datenbank. Bitte versuchen Sie es erneut.');
+                    }
+                });
+            }
         });
     </script>
 </body>
